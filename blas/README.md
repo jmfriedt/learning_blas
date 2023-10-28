@@ -41,7 +41,7 @@ RM a'*a
 Executing the C program ``demo2_matrix_rectangleCM`` using Column Major ordering of rectangular matrices will provide the following outputs (left) and right the GNU/Octave output
 ```
              C                       Octave
-0.00 2.00 -1.00 1.00 -2.00 0.00   a=[0 -1;-2 2 ;1 0]
+0.00 2.00 -1.00 1.00 -2.00 0.00   a=[0 1;2 -2 ;-1 0]
 0.00 2.00 -1.00 1.00 -2.00 0.00   a'*a
 5.00 -4.00                        5  -4
 -4.00 5.00                       -4   5
