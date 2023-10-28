@@ -15,7 +15,6 @@ for Nlag=[20 2000]
   end
   
   % correlation comme produit matriciel
-  hold off
   tic
   s1=signal*matrice.';
   toc
