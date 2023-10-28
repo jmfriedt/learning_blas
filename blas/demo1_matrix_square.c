@@ -9,7 +9,8 @@ void affiche_matrice(float*mat,int x,int y)
 {int l,m;
   for (m=0;m<x;m++) 
    {for (l=0;l<y;l++)
-       printf("%.2f ",mat[l*x+m]);
+       printf("%.2f ",mat[l*x+m]);    // Column Major
+       // printf("%.2f ",mat[l+y*m]); // Row Major
     printf("\n");
    }
   printf("\n");
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
   alpha=1.;beta=0.;
   for (m=0;m<nlag;m++)
     for (l=0;l<nobs;l++)
-      host_val[m+nlag*l]=(double)(2*m-l);
+      host_val[m+nlag*l]=(float)(2*m-l);
   for (m=0;m<nobs*nlag;m++) printf("%.2f ",host_val[m]); // 0.00 1.00 -1.00 0.00 -2.00 -1.00
   printf("\n");
 // CblasRowMajor ou CblasColMajor ? row-major (C) or column-major (Fortran) data ordering
