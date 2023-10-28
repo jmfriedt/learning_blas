@@ -9,8 +9,8 @@ void affiche_matrice(float*mat,int x,int y)
 {int l,m;
   for (m=0;m<x;m++) 
    {for (l=0;l<y;l++)
-       printf("%.2f ",mat[l*x+m]);    // Column Major
-       // printf("%.2f ",mat[l+y*m]); // Row Major
+       // printf("%.2f ",mat[l*x+m]);    // Column Major
+       printf("%.2f ",mat[l+y*m]);       // Row Major
     printf("\n");
    }
   printf("\n");

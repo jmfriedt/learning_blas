@@ -9,8 +9,8 @@ void affiche_matrice(std::complex<double>*mat,int x,int y)
 {int l,m;
   for (m=0;m<x;m++) 
    {for (l=0;l<y;l++)
-       printf("%.2lf+j%.2f ",mat[l*x+m].real(),mat[l*x+m].imag());    // Column Major
-       // printf("%.2f ",mat[l+y*m]); // Row Major
+       // printf("%.2lf+j%.2f ",mat[l*x+m].real(),mat[l*x+m].imag());    // Column Major
+       printf("%.2lf+j%.2lf ",mat[l+y*m].real(),mat[l+y*m].imag());      // Row Major
     printf("\n");
    }
   printf("\n");
