@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
       }
   printf("\n");
   for (m=0;m<nobs-5;m++)          // time shifted copies of the code
-      {host_val[m+2]+=host_code[m]; // m+4 = ...
-       host_val[m+5]+=host_code[m];
-       host_val[m]+=host_code[m+3];
+      {host_val[m+2]+=0.5*host_code[m]; // m+4 = ...
+       host_val[m+5]+=1.2*host_code[m];
+       host_val[m]+=0.3*host_code[m+3];
       }
   for (m=0;m<nlag;m++)          // time shifted copies of the code
     {pwr=cblas_zdotc(nobs, host_val+m, 1, host_code, 1);
