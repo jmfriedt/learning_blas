@@ -9,14 +9,14 @@ end
 
 % matrice contenant les copies du code retard'e de 1 `a Nlag
 for Nlag=[20 2000]
-  matrice=zeros(2*Nlag+1,length(signal)); % longueur signal >> longueur code
+  matrice=zeros(length(signal),2*Nlag+1); % longueur signal >> longueur code
   for N=-Nlag:Nlag
-      matrice(N+Nlag+1,N+Nlag+1:Nlag+N+length(code))=code;
+      matrice(N+Nlag+1:Nlag+N+length(code),N+Nlag+1)=code;
   end
   
   % correlation comme produit matriciel
   tic
-  s1=signal*matrice.';
+  s1=signal*matrice;
   toc
   figure
   plot(abs(s1))

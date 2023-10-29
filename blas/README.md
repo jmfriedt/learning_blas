@@ -76,3 +76,11 @@ Executing the C++ program ``demo4_matrix_rectangleRMcomplex`` using complex argu
 4.00+j7.00 3.00+j6.00 2.00+j5.00                                        4 +  7i    3 +  6i    2 +  5i
 3.00+j2.00 2.00+j5.00 1.00+j8.00                                        3 +  2i    2 +  5i    1 +  8i
 ```
+
+Finally the last example, relying on the knowledge accumulated so far about matrix orientation and data organization, is ``demo_matrix_final.cpp`` using
+complex number with time delayed copies of a code in a noisy signal.
+
+*When correlating, make sure to transpose with the complex conjugate* and not a simple line to column transposition. Only by conjugating will the power
+accumulate in the correlation peak:
+
+<img src="demo_xcorr.png">
