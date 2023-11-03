@@ -1,10 +1,10 @@
-all: demo_complex demo_matrix
+all: demo_pinv demo_matrix
 
 demo_matrix: demo_matrix.c
 	gcc -Wall -o demo_matrix demo_matrix.c -lgsl
 
-demo_complex: demo_complex.c
-	gcc -Wall -o demo_complex demo_complex.c -lgsl
+demo_pinv: demo_pinv.c
+	gcc -Wall -o demo_pinv demo_pinv.c -lgsl
 
 clean:
-	rm demo_complex demo_matrix
+	rm demo_pinv demo_matrix
