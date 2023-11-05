@@ -60,7 +60,7 @@ int main (void)
  gsl_matrix_complex *host_out=gsl_matrix_complex_alloc(nobs,2*nlag+1);
  gsl_vector_complex *host_final=gsl_vector_complex_alloc(2*nlag+1);
 
-// identique a` l'exemple matrix
+// identique a` l'exemple matrix -- see https://www.gnu.org/software/gsl/doc/html/blas.html for BLAS functions in GSL
  gsl_vector_complex_view tmp_vector_view1,tmp_vector_view2;
  gsl_complex z;
  gsl_complex alpha=1+0*I;

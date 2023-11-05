@@ -1,4 +1,4 @@
-all: demo1_matrix_square demo2_matrix_rectangleCM demo3_matrix_rectangleRM demo4_matrix_rectangleRMcomplex demo5_matrix_rectangleCM demo6_matrix_xcorr demo7_matrix_inv demo8_matrix_pinv
+all: demo1_matrix_square demo2_matrix_rectangleCM demo3_matrix_rectangleRM demo4_matrix_rectangleRMcomplex demo5_matrix_rectangleCM demo6_matrix_xcorr demo7_matrix_inv demo8_matrix_pinv demo9_matrix_pinv_zgetrs
 
 FLAGS=-I/usr/include/clapack -lopenblas -llapacke64
 
@@ -26,5 +26,8 @@ demo7_matrix_inv: demo7_matrix_inv.cpp
 demo8_matrix_pinv: demo8_matrix_pinv.cpp
 	gcc -Wall -o demo8_matrix_pinv demo8_matrix_pinv.cpp $(FLAGS) -lm
 
+demo9_matrix_pinv_zgetrs: demo9_matrix_pinv_zgetrs.cpp
+	gcc -Wall -o demo9_matrix_pinv_zgetrs demo9_matrix_pinv_zgetrs.cpp $(FLAGS) -lm
+
 clean: 
-	rm demo1_matrix_square demo2_matrix_rectangleCM demo3_matrix_rectangleRM demo4_matrix_rectangleRMcomplex demo5_matrix_rectangleCM demo6_matrix_xcorr demo7_matrix_inv demo8_matrix_pinv
+	rm demo1_matrix_square demo2_matrix_rectangleCM demo3_matrix_rectangleRM demo4_matrix_rectangleRMcomplex demo5_matrix_rectangleCM demo6_matrix_xcorr demo7_matrix_inv demo8_matrix_pinv demo9_matrix_pinv_zgetrs
