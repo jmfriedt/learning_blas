@@ -103,7 +103,7 @@ int main()
 #endif
   cusolverDnCreate(&handlegetrs);
   cusolverDnZgetrf_bufferSize(handlegetrs, N, N, dev_in, N, &bufferSize);
-  cudaMalloc(&buffer, sizeof(cuDoubleComplex) * bufferSize);
+  cudaMalloc(&buffer, sizeof(cuDoubleComplex) * bufferSize );
 // https://docs.nvidia.com/cuda/cusolver/index.html
   if (cusolverDnZgetrf(handlegetrs, N, N, dev_in, N, buffer, P, INFO) != CUSOLVER_STATUS_SUCCESS)
      printf("error 1\n");

@@ -1,4 +1,7 @@
-all: demo1_matrix_square demo2_matrix_rectangleCM demo3_matrix_rectangleRM demo4_matrix_rectangleRMcomplex demo5_matrix_rectangleCM demo6_matrix_xcorr demo7_matrix_inv demo8_matrix_pinv demo9_matrix_pinv_zgetrs
+#  apt install liblapacke64
+#  apt install liblapacke64-dev
+      
+      all: demo1_matrix_square demo2_matrix_rectangleCM demo3_matrix_rectangleRM demo4_matrix_rectangleRMcomplex demo5_matrix_rectangleCM demo6_matrix_xcorr demo7_matrix_inv demo8_matrix_pinv demo9_matrix_pinv_zgetrs
 
 FLAGS=-I/usr/include/clapack -lopenblas -llapacke64
 
