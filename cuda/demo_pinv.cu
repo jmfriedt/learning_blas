@@ -9,22 +9,21 @@
 #define PI 3.141592653589793
 
 #undef debug
+//#define debug
 
 // https://stackoverflow.com/questions/15997888/creating-identity-matrix-with-cuda
 __global__ void initIdentityGPU(cuDoubleComplex *devMatrix, int N) {
 int x = blockDim.x*blockIdx.x + threadIdx.x;
-int y = blockDim.y*blockIdx.y + threadIdx.y;
-if(y < N && x < N) {
-  if(x == y) {devMatrix[y*N+x].x = 1.; devMatrix[y*N+x].y = 0.;}
-    else {devMatrix[y*N+x].x = 0.; devMatrix[y*N+x].x = 0.;}
-  }
+if (x < N*N)
+  if ((x/N) == (x%N)) {devMatrix[x].x = 1.; devMatrix[x].y = 0.;}
+    else {devMatrix[x].x = 0.; devMatrix[x].x = 0.;}
 }
 
 // https://stackoverflow.com/questions/22887167/cublas-incorrect-inversion-for-matrix-with-zero-pivot
 int main()
 {
   int nobs=2100;
-  int nlag=22; // MUST BE < 16 !
+  int nlag=30;
   int l,m;
   const int N=2*nlag+1;
   cuDoubleComplex *dev_mem, *dev_mem_out, *dev_res, *dev_val, *dev_inv, *dev_Id, *dev_in;     // .x, .y
@@ -90,12 +89,22 @@ int main()
   cusolverDnHandle_t handlegetrs = NULL;
   int bufferSize = 0;
   cuDoubleComplex *buffer = NULL;
-//  initIdentityGPU<<<128, 128>>>(dev_Id,N);
+  initIdentityGPU<<<128, 128>>>(dev_Id,N); // fill Identity matrix
+#ifdef debug
+  cudaMemcpy(host_res,dev_Id,sizeof(cuDoubleComplex) * (2*nlag+1)*(2*nlag+1),cudaMemcpyDeviceToHost);
+  printf("Id\n");
+  for (m=0;m<(2*nlag+1);m++)
+    {for (l=0;l<(2*nlag+1);l++) printf("%.4lf ",real(host_res[m+l*(2*nlag+1)]));
+     printf("; \n");
+    }
+#endif
+/*
   for (m=0;m<(2*nlag+1);m++)
     for (l=0;l<(2*nlag+1);l++) 
       if (m!=l) {host_res[m+l*(2*nlag+1)].real(0.);host_res[m+l*(2*nlag+1)].imag(0.);}
       else {host_res[m+l*(2*nlag+1)].real(1.);host_res[m+l*(2*nlag+1)].imag(0.);}
   cudaMemcpy(dev_Id,host_res,sizeof(cuDoubleComplex) * (2*nlag+1)*(2*nlag+1),cudaMemcpyHostToDevice);
+*/
   memset(host_res , 0x0, sizeof(std::complex<double>) * (2*nlag+1) * (2*nlag+1));
 #ifdef debug
   cudaMemcpy(host_res,dev_in,sizeof(cuDoubleComplex) * (2*nlag+1)*(2*nlag+1),cudaMemcpyDeviceToHost);
