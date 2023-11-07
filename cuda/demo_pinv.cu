@@ -24,10 +24,10 @@ if(y < N && x < N) {
 int main()
 {
   int nobs=2100;
-  int nlag=15; // MUST BE < 16 !
+  int nlag=22; // MUST BE < 16 !
   int l,m;
   const int N=2*nlag+1;
-  cuDoubleComplex *dev_mem, *dev_res, *dev_val, *dev_inv, *dev_Id, *dev_in;     // .x, .y
+  cuDoubleComplex *dev_mem, *dev_mem_out, *dev_res, *dev_val, *dev_inv, *dev_Id, *dev_in;     // .x, .y
   std::complex<double> *host_mem,*host_res,*host_val,*host_code;  // real(), imag()
   cublasHandle_t handle;
   cuDoubleComplex alpha,beta;
@@ -38,6 +38,7 @@ int main()
   cublasCreate(&handle);
 
   cudaMalloc((void **)&dev_mem, sizeof(cuDoubleComplex) * nobs * (nlag*2+1));
+  cudaMalloc((void **)&dev_mem_out, sizeof(cuDoubleComplex) * nobs * (nlag*2+1));
   host_mem=(std::complex<double>*)malloc(sizeof(std::complex<double>)*nobs*(nlag*2+1));
   host_val=(std::complex<double>*)malloc(sizeof(std::complex<double>)*nobs);
   host_code=(std::complex<double>*)malloc(sizeof(std::complex<double>)*nobs);
@@ -74,6 +75,9 @@ int main()
 //	 printf("error 0\n");
   cudaDeviceSynchronize();
   int *P, *INFO;
+#ifdef debug
+  int INFOh;
+#endif
   cudaMalloc((void **)&P, sizeof(int) * (2*nlag+1));
   cudaMalloc((void **)&INFO, sizeof(int));
 //  (cudaMalloc<int>(&P,N * sizeof(int)));
@@ -104,24 +108,40 @@ int main()
   cusolverDnCreate(&handlegetrs);
   cusolverDnZgetrf_bufferSize(handlegetrs, N, N, dev_in, N, &bufferSize);
   cudaMalloc(&buffer, sizeof(cuDoubleComplex) * bufferSize );
+//  cudaMalloc(&buffer, sizeof(cuDoubleComplex) * N );
 // https://docs.nvidia.com/cuda/cusolver/index.html
   if (cusolverDnZgetrf(handlegetrs, N, N, dev_in, N, buffer, P, INFO) != CUSOLVER_STATUS_SUCCESS)
      printf("error 1\n");
+#ifdef debug
+  cudaMemcpy(&INFOh,INFO,sizeof(int),cudaMemcpyDeviceToHost);
+  printf("INFO: %d\n",INFOh);
+#endif
   if (cusolverDnZgetrs(handlegetrs, CUBLAS_OP_N, N, N, dev_in, N, P, dev_Id, N, INFO) != CUSOLVER_STATUS_SUCCESS)
      printf("error 2\n");
-  cudaMemcpy(host_res,dev_Id,sizeof(cuDoubleComplex) * (2*nlag+1)*(2*nlag+1),cudaMemcpyDeviceToHost);
 #ifdef debug
+  cudaMemcpy(&INFOh,INFO,sizeof(int),cudaMemcpyDeviceToHost);
+  printf("INFO: %d\n",INFOh);
+  cudaMemcpy(host_res,dev_Id,sizeof(cuDoubleComplex) * (2*nlag+1)*(2*nlag+1),cudaMemcpyDeviceToHost);
   printf("res\n");
   for (m=0;m<(2*nlag+1);m++)
     {for (l=0;l<(2*nlag+1);l++) printf("%.4lf ",real(host_res[m+l*(2*nlag+1)]));
      printf("; \n");
     }
 #endif
-  if (cublasZgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, nobs, 2*nlag+1, 2*nlag+1, &alpha, dev_mem,  nobs, dev_Id, 2*nlag+1, &beta, dev_mem, nobs) != CUBLAS_STATUS_SUCCESS)
+  if (cublasZgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, nobs, 2*nlag+1, 2*nlag+1, &alpha, dev_mem,  nobs, dev_Id, 2*nlag+1, &beta, dev_mem_out, nobs) != CUBLAS_STATUS_SUCCESS)
      printf("error 3\n");
-  cublasZgemm(handle, CUBLAS_OP_C, CUBLAS_OP_N, 1, 2*nlag+1, nobs, &alpha, dev_val,  nobs, dev_mem, nobs, &beta, dev_res, 1);
+  // /!\ output matrix must NOT be the same than input argument ("in-place computation is not allowed", "C must not overlap")
+#ifdef debug
+  cudaMemcpy(host_mem,dev_mem_out,sizeof(cuDoubleComplex) * (2*nlag+1) * (nobs),cudaMemcpyDeviceToHost);
+  printf("res\n");
+  for (m=0;m<nobs;m++)
+    {for (l=0;l<(2*nlag+1);l++) printf("%.4lf ",real(host_mem[m+l*(nobs)]));
+     printf("; \n");
+    }
+#endif
+  cublasZgemm(handle, CUBLAS_OP_C, CUBLAS_OP_N, 1, 2*nlag+1, nobs, &alpha, dev_val,  nobs, dev_mem_out, nobs, &beta, dev_res, 1);
   cudaMemcpy(host_res,dev_res,sizeof(cuDoubleComplex) * (2*nlag+1),cudaMemcpyDeviceToHost);
-  for (m=0;m<2*nlag+1;m++) printf("%.2lf ",abs(host_res[m]));
+  for (m=0;m<2*nlag+1;m++) printf("%.9lf ",abs(host_res[m]));
   printf("\n");
   cudaFree(P), cudaFree(INFO), cublasDestroy(handle);
 }
