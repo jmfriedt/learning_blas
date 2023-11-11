@@ -71,7 +71,7 @@ int main()
   cublasSetMatrix (nobs, nlag*2+1, sizeof(*host_mem), host_mem, nobs, dev_mem, nobs);
   cublasSetMatrix (1, nobs, sizeof(*host_val), host_val, 1   , dev_val, 1   );
   if (cublasZgemm(handle, CUBLAS_OP_C, CUBLAS_OP_N, N, N, nobs, &alpha, dev_mem,  nobs, dev_mem, nobs, &beta, dev_in, N) != CUBLAS_STATUS_SUCCESS)
-//	 printf("error 0\n");
+     printf("error 0\n");
   cudaDeviceSynchronize();
   int *P, *INFO;
 #ifdef debug
