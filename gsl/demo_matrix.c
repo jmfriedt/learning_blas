@@ -1,14 +1,38 @@
 #include <stdio.h>
 #include <math.h>
-#include <complex.h>
+#include <complex.h>  // I definition
 
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+/* Solving complex linear system
+  *      (3+i)x -    2y  = 3-4i
+  *      -3x    + (1-2i) = -1+.5i
+  */
+
+#undef debug
+
+void add_with_offset(gsl_vector_complex *code, gsl_vector_complex *inout, float scale, int total_len, int offset)
+{ gsl_vector_complex_view tmp_vector_view1,tmp_vector_view2;
+  gsl_vector_complex *tmp=gsl_vector_complex_alloc(total_len-abs(offset));
+  if (offset>=0)
+    {tmp_vector_view1=gsl_vector_complex_subvector(inout,0,total_len-abs(offset));
+     tmp_vector_view2=gsl_vector_complex_subvector(code,offset,total_len-abs(offset));
+    }
+  else
+    {tmp_vector_view1=gsl_vector_complex_subvector(inout,-offset,total_len-abs(offset));
+     tmp_vector_view2=gsl_vector_complex_subvector(code,0,total_len-abs(offset));
+    }
+  gsl_vector_complex_memcpy( tmp, &tmp_vector_view2.vector);
+  gsl_vector_complex_memcpy( tmp, &tmp_vector_view2.vector);
+  gsl_vector_complex_scale(tmp, scale);
+  gsl_vector_complex_add(&tmp_vector_view1.vector,tmp);
+  gsl_vector_complex_free(tmp);
+}
 
 int main()
-{
-  int nobs=2000;
+{ int nobs=2000;
   int nlag=20;
   int i;
   int l,m;
@@ -42,6 +66,7 @@ int main()
   host_code=gsl_vector_complex_alloc(nobs);
   host_res=gsl_vector_complex_alloc(nlag*2+1);
   host_mem=gsl_matrix_complex_alloc(nobs,nlag*2+1);
+
   for (m=0;m<nobs;m++) 
       {GSL_REAL(z)=(double)(random()/pow(2,31))-0.5; 
        GSL_IMAG(z)=(double)(random()/pow(2,31))-0.5; ;
@@ -50,32 +75,10 @@ int main()
        GSL_IMAG(z)=(double)(random()/pow(2,31))-0.5; ;
        gsl_vector_complex_set(host_code,m,z);
       }
-//  gsl_vector_complex_add(host_val,host_code);
-//  gsl_vector_complex_fprintf(stdout, host_val, "%g");
-  tmp_vector_view1=gsl_vector_complex_subvector(host_val,0,nobs-12);
-  tmp_vector_view2=gsl_vector_complex_subvector(host_code,12,nobs-12);
-  gsl_vector_complex_scale(&tmp_vector_view2.vector, 0.3);
-  gsl_vector_complex_add(&tmp_vector_view1.vector,&tmp_vector_view2.vector);
-  tmp_vector_view1=gsl_vector_complex_subvector(host_val,0,nobs-3);
-  tmp_vector_view2=gsl_vector_complex_subvector(host_code,3,nobs-3);
-  gsl_vector_complex_scale(&tmp_vector_view2.vector, 1.3);
-  gsl_vector_complex_add(&tmp_vector_view1.vector,&tmp_vector_view2.vector);
-  tmp_vector_view1=gsl_vector_complex_subvector(host_val,10,nobs-10);
-  tmp_vector_view2=gsl_vector_complex_subvector(host_code,0,nobs-10);
-  gsl_vector_complex_scale(&tmp_vector_view2.vector, 0.8);
-  gsl_vector_complex_add(&tmp_vector_view1.vector,&tmp_vector_view2.vector);
-  tmp_vector_view1=gsl_vector_complex_subvector(host_val,5,nobs-5);
-  tmp_vector_view2=gsl_vector_complex_subvector(host_code,0,nobs-5);
-  gsl_vector_complex_add(&tmp_vector_view1.vector,&tmp_vector_view2.vector);
-//  gsl_vector_complex_fprintf(stdout, host_val, "%g");
-/*
-  for (m=0;m<nobs-12;m++)          // time shifted copies of the code
-      {host_val[m+12]+=host_code[m];
-       host_val[m+3]+=host_code[m];
-       host_val[m]+=host_code[m+12];
-       host_val[m]+=host_code[m+3];
-      }
-*/
+  add_with_offset(host_code, host_val, 0.3, nobs, -12);
+  add_with_offset(host_code, host_val, 1.3, nobs, -3);
+  add_with_offset(host_code, host_val, 0.8, nobs, 10);
+  add_with_offset(host_code, host_val, 1.0, nobs, 5);
   gsl_matrix_complex_set_zero(host_mem);  // memset(host_mem,0x0,sizeof(std::complex<double>)*nobs*nlag);
   for (l=-nlag;l<=nlag;l++)
       {                      //    for (m=0;m<nobs-l;m++)
