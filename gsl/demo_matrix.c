@@ -104,7 +104,9 @@ int main()
 //  gsl_matrix_complex_fprintf(stdout, host_mem, "%g");
 //  printf("done\n");
   gsl_blas_zgemv(CblasConjTrans, alpha, host_mem, host_val,beta, host_res); // /!\ ConjTrans
+  printf("t=[\n");
   gsl_vector_complex_fprintf(stdout, host_res, "%g");
+  printf("];\nplot([-%d:%d],t(:,1)+j*t(:,2))\n",nlag,nlag);
   return 0;
 }
 /*

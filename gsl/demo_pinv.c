@@ -107,7 +107,8 @@ int main (void)
   gsl_linalg_complex_LU_invert (host_res, p, host_res);
   gsl_blas_zgemm(CblasNoTrans, CblasNoTrans, alpha, host_mem, host_res, beta, host_out);
   gsl_blas_zgemv(CblasConjTrans, alpha, host_out, host_val, beta, host_final);
+  printf("t=[");
   gsl_vector_complex_fprintf(stdout, host_final, "%g");
-  printf("%% load t; plot([-%d:%d],abs(t(:,1)+j*t(:,2)))\n",nlag,nlag);
+  printf("];\nplot([-%d:%d],abs(t(:,1)+j*t(:,2)))\n",nlag,nlag);
   return 0;
 }
