@@ -139,10 +139,10 @@ int main()
     }
 #endif
   cublasZgemm(handle, CUBLAS_OP_C, CUBLAS_OP_N, 1, 2*nlag+1, nobs, &alpha, dev_val,  nobs, dev_mem_out, nobs, &beta, dev_res, 1);
-  cudaMemcpy(host_res,dev_res,sizeof(cuDoubleComplex) * (2*nlag+1),cudaMemcpyDeviceToHost);
-  cudaDeviceSynchronize();
   gettimeofday(&tv2,NULL);
   printf("\ntime %ld\n",(tv2.tv_sec-tv1.tv_sec)*1000000+tv2.tv_usec-tv1.tv_usec);
+  cudaMemcpy(host_res,dev_res,sizeof(cuDoubleComplex) * (2*nlag+1),cudaMemcpyDeviceToHost);
+  cudaDeviceSynchronize();
   for (m=0;m<2*nlag+1;m++) printf("%.9lf ",abs(host_res[m]));
   printf("\n");
   cudaFree(P), cudaFree(INFO), cublasDestroy(handle);
