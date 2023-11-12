@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <complex.h>  // I definition
-
+#include <sys/time.h>
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_blas.h>
@@ -48,9 +48,9 @@ int main (void)
  gsl_vector_complex_fprintf(stdout, x, "%g");
 #endif
  gsl_permutation_free (p);
-
- int nobs=5000;
- int nlag=25;
+ struct timeval tv1,tv2;
+ int nobs=210000;
+ int nlag=30;
  int l,m;
  gsl_vector_complex *host_val=gsl_vector_complex_alloc(nobs);
 //https://www.netlib.org/lapack/explore-html/d1/d54/group__double__blas__level3_gaeda3cbd99c8fb834a60a6412878226e1.html
@@ -101,12 +101,15 @@ int main (void)
       }
 // gsl_matrix_complex_fprintf(stdout, host_mem, "%g");
 // fin identique
+  gettimeofday(&tv1,NULL);
   gsl_blas_zgemm(CblasConjTrans, CblasNoTrans, alpha, host_mem, host_mem, beta, host_res); // /!\ ConjTrans
   p = gsl_permutation_alloc (2*nlag+1);
   gsl_linalg_complex_LU_decomp(host_res, p, &s);
   gsl_linalg_complex_LU_invert (host_res, p, host_res);
   gsl_blas_zgemm(CblasNoTrans, CblasNoTrans, alpha, host_mem, host_res, beta, host_out);
   gsl_blas_zgemv(CblasConjTrans, alpha, host_out, host_val, beta, host_final);
+  gettimeofday(&tv2,NULL);
+  printf("\ntime %ld\n",tv2.tv_usec-tv1.tv_usec);
   printf("t=[");
   gsl_vector_complex_fprintf(stdout, host_final, "%g");
   printf("];\nplot([-%d:%d],abs(t(:,1)+j*t(:,2)))\n",nlag,nlag);

@@ -22,8 +22,8 @@ void affiche_matrice(std::complex<double>*mat,int x,int y)
 }
 
 int main(int argc, char *argv[])
-{ int nobs=20000;
-  int nlag=15;
+{ int nobs=2100;
+  int nlag=30;
   int l,m;
   struct timeval tv1,tv2;
   std::complex<double> *host_mem,*host_code,*host_val,*host_res;
@@ -79,8 +79,10 @@ int main(int argc, char *argv[])
   printf("];\n");
 #endif
   // cblas_zgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1 , 2*nlag+1, nobs, &alpha, host_val, nobs, host_mem, nobs, &beta, host_res, 1 ); 
+  gettimeofday(&tv1,NULL);
   cblas_zgemm(CblasColMajor, CblasConjTrans, CblasNoTrans, 1 , 2*nlag+1, nobs, &alpha, host_val, nobs, host_mem, nobs, &beta, host_res, 1 ); 
-  affiche_matrice(host_res,1, 2*nlag+1);
+  gettimeofday(&tv2,NULL); printf("\ntime %ld\n",tv2.tv_usec-tv1.tv_usec);
+  //affiche_matrice(host_res,1, 2*nlag+1);
   // C := alpha*op( A )*op( B ) + beta*C,
   // alpha and beta are scalars, and A, B and C are matrices, with op( A )
   // an m by k matrix,  op( B )  a  k by n matrix and  C an m by n matrix.

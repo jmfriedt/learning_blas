@@ -32,8 +32,8 @@ void add_with_offset(gsl_vector_complex *code, gsl_vector_complex *inout, float 
 }
 
 int main()
-{ int nobs=2000;
-  int nlag=20;
+{ int nobs=2100;
+  int nlag=30;
   int i;
   int l,m;
   gsl_matrix_complex *host_mem;

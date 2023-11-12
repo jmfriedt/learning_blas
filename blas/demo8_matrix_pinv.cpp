@@ -22,8 +22,8 @@ void affiche_matrice(std::complex<double>*mat,int x,int y)
 }
 
 int main(int argc, char *argv[])
-{ int nobs=2000;
-  int nlag=15;
+{ int nobs=2100;
+  int nlag=30;
   const int N=2*nlag+1;
   int l,m,info;
   int *IPIV;

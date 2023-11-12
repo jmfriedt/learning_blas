@@ -8,13 +8,9 @@
 
 #include <sys/time.h>
 
-#define PI 3.141592653589793
-
 int main()
-{
-  //cublasHandle_t handle;
-  int nobs=2100;
-  int nlag=20;
+{ int nobs=2100;
+  int nlag=30;
   int l,m;
   struct timeval tv1,tv2;
   cuDoubleComplex *dev_mem, *dev_res, *dev_val;     // .x, .y
@@ -74,6 +70,7 @@ power 3938.000000
        if (l<0) host_mem[(m)+nobs*(l+nlag)]=host_code[m-l];
           else  host_mem[(m+l)+nobs*(l+nlag)]=host_code[m];
       // host_mem[(l+nlag)*nobs+m+l+nlag]=host_code[m];
+  gettimeofday(&tv1,NULL);
   cublasSetMatrix (nobs, nlag*2+1, sizeof(*host_mem), host_mem, nobs, dev_mem, nobs);
   cublasSetMatrix (1, nobs, sizeof(*host_val), host_val, 1   , dev_val, 1   );
 //  cudaMemcpy(dev_mem, host_mem, sizeof(cuDoubleComplex) * nobs * nlag, cudaMemcpyHostToDevice);
@@ -83,6 +80,9 @@ power 3938.000000
 //   ** On entry to ZGEMM  parameter number 8 had an illegal value si 1 au lieu de nobs apres dev_val
 //  cudaMemcpy(host_res, dev_res, sizeof(cuDoubleComplex) * nlag       , cudaMemcpyDeviceToHost);
   cublasGetMatrix (1, 2*nlag+1, sizeof(*host_res), dev_res, 1, host_res, 1);
+  cudaDeviceSynchronize();
+  gettimeofday(&tv2,NULL);
+  printf("\ntime %ld\n",tv2.tv_usec-tv1.tv_usec);
 // cublasIdamax(handle, ci[i].nlag * 2 + 1, ci[i].dev_cor + p * (ci[i].nlag * 2 + 1), 1, &pk_idx);
 // pk_idx -= 1;
   for (m=0;m<2*nlag+1;m++) printf("%.2lf ",abs(host_res[m]));

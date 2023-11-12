@@ -34,22 +34,19 @@ int main()
    if (k<20) printf("%.2lf ",real(host_mem[k]));
   }
   printf("\n");
+  gettimeofday(&tv1,NULL);
   cudaMemcpy(dev_mem, host_mem, sizeof(cufftDoubleComplex) * nobs, cudaMemcpyHostToDevice);
-  gettimeofday(&tv1,NULL);
   cufftPlan1d(&plan, nobs, CUFFT_Z2Z, 1);
-  gettimeofday(&tv2,NULL); printf("\ntime %d\n",tv2.tv_usec-tv1.tv_usec);
-  gettimeofday(&tv1,NULL);
   cufftExecZ2Z(plan, dev_mem, dev_mem, CUFFT_FORWARD);
-  gettimeofday(&tv2,NULL); printf("\ntime %d\n",tv2.tv_usec-tv1.tv_usec);
   cudaMemcpy(host_mem, dev_mem, sizeof(cufftDoubleComplex) * nobs, cudaMemcpyDeviceToHost);
+  gettimeofday(&tv2,NULL); printf("\ntime GPU fwd %d\n",tv2.tv_usec-tv1.tv_usec);
   for (k=0;k<20;k++) printf("%.2lf ",abs(host_mem[k+(int)(f/fs*(float)nobs)-10])); // 440/fs*nobs
   gettimeofday(&tv1,NULL);
   cufftExecZ2Z(plan, dev_mem, dev_mem, CUFFT_INVERSE);
-  gettimeofday(&tv2,NULL); printf("\ntime %d\n",tv2.tv_usec-tv1.tv_usec);
   cufftDestroy(plan);
-  
-  printf("\n");
   cudaMemcpy(host_mem, dev_mem, sizeof(cufftDoubleComplex) * nobs, cudaMemcpyDeviceToHost);
+  gettimeofday(&tv2,NULL); printf("\ntime GPU rev %d\n",tv2.tv_usec-tv1.tv_usec);
+  printf("\n");
   for (k=0;k<20;k++) printf("%.2lf ",real(host_mem[k])/(double)nobs);
   printf("\n");
 
@@ -71,10 +68,10 @@ int main()
      FFTW_BACKWARD, FFTW_ESTIMATE);
   gettimeofday(&tv1,NULL);
   fftw_execute(_plan_a_dx);
-  gettimeofday(&tv2,NULL); printf("\ntime %d\n",tv2.tv_usec-tv1.tv_usec);
+  gettimeofday(&tv2,NULL); printf("\ntime CPU fwd %d\n",tv2.tv_usec-tv1.tv_usec);
   for (k=0;k<20;k++) printf("%.2lf ",abs(host_mem[k+(int)(f/fs*(float)nobs)-10])); // 440/fs*nobs
   gettimeofday(&tv1,NULL);
   fftw_execute(_ifft_dx);
-  gettimeofday(&tv2,NULL); printf("\ntime %d\n",tv2.tv_usec-tv1.tv_usec);
+  gettimeofday(&tv2,NULL); printf("\ntime CPU rev %d\n",tv2.tv_usec-tv1.tv_usec);
   for (k=0;k<20;k++) printf("%.2lf ",real(host_mem[k])/(double)nobs);
 }
