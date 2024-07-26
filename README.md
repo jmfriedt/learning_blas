@@ -1,6 +1,7 @@
 ## Learning BLAS
 
-The objective of this set of programs is to compare implementation, performance and results
+The objective of this set of programs is to become familiar with the API and compare implementation, 
+performance and results
 of linear algebra algorithms implemented using BLAS (CPU), cuBLAS (CUDA on GPU), and GSL, and
 for the Fast Fourier Transform (FFT) using <a href="https://www.fftw.org/">fftw3</a> (CPU) and 
 cuFFT (CUDA on GPU).
