@@ -20,5 +20,16 @@ Device 0: "NVIDIA T400 4GB"
 All subdirectories include a Makefile for compiling the programs and a description of the expected output.
 The focus is on least square optimization so aimed at pseudo-inverse matrix calculation, reaching this
 result step by step from handling square matrices to rectangular matrices to inverting such matrices.
-The FFT are computed in the conctext of correlations assessed as inverse Fourier transform of the product 
+The FFT are computed in the context of correlations assessed as inverse Fourier transform of the product 
 of the Fourier transform of the signal and the pattern.
+
+Start with ``octave`` to get the basics on signal processing involved in this demonstration and
+the expected outcome.
+
+Then ``blas`` demonstrates the use of the linear algebra BLAS package to achieve the same result
+in C++ on a general purpose CPU.
+
+Then ``cuda`` demonstrates the use of cuBLAS and cuFFT for processing on an Nvidia GPU.
+
+Finally ``gsl`` aims at wrapping BLAS function calls in interfaces removing some of the FORTRAN
+flavor of the original library.
